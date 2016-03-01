@@ -19,5 +19,13 @@ rrs('public/img/product/').forEach(function(item, i){
 		})
 	}
 })
+var imgJson = [
+		'var products = ', 
+		JSON.stringify(products),
+		';module.exports = {',
+		    'zh_cn: products,',
+		    'en: products',
+		'}'
+	].join('');
 
-console.log(''+products)
+fs.writeFileSync('public/json/product/product.js', imgJson);
