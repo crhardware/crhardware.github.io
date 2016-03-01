@@ -24,3 +24,5 @@ gulp.task('default', function() {
         }))
         .pipe(gulp.dest(__dirname + '/public/scripts/'));
 });
+
+gulp.task('img', require('./imgjson-generator.js'))

@@ -39,7 +39,7 @@ var Product = React.createClass({
 			var products = jsonProduct[typeItem.id],
 				typeJsx,
 				productJsx;
-			if (products.length) {
+			if (products && products.length) {
 				typeJsx = (
 						<div>
 							<span style={style.type}>{typeItem.title}</span>
