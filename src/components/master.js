@@ -39,13 +39,14 @@ var Master = React.createClass({
     },
     render: function() {
         var styles = this.getStyles(),
-            lang = this.state.lang;
+            lang = this.state.lang,
+            jsonData = jsonDatas[lang];;
         return ( <AppCanvas> 
 		        	{this._getTabs()} 
 		        	{React.cloneElement(this.props.children, {lang: lang})} 
 		        	<FullWidthSection style={styles.footer}>
 			            <p style={this.prepareStyles(styles.p)}> 
-                            <a style={styles.a} href="javascript:void(0);" onClick={this._handleContactClick}>联系我们</a>
+                            <a style={styles.a} href="javascript:void(0);" onClick={this._handleContactClick}>{jsonData.footer.contactUs}</a>
                             <span style={styles.spanSplit}></span>
                             teamai@foxmail.com
                         </p> 

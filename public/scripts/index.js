@@ -52,7 +52,7 @@
 	var ReactRouter = __webpack_require__(160);
 	var Router = ReactRouter.Router;
 	var createHistory = __webpack_require__(163);
-	var injectTapEventPlugin = __webpack_require__(404);
+	var injectTapEventPlugin = __webpack_require__(406);
 
 	//Needed for onTouchTap
 	//Can go away when react 1.0 release
@@ -19670,7 +19670,7 @@
 	var Master = __webpack_require__(209);
 	var Home = __webpack_require__(298);
 	var Product = __webpack_require__(391);
-	var About = __webpack_require__(396);
+	var About = __webpack_require__(398);
 
 	var AppRoutes = React.createElement(
 		Route,
@@ -24188,7 +24188,8 @@
 	    },
 	    render: function render() {
 	        var styles = this.getStyles(),
-	            lang = this.state.lang;
+	            lang = this.state.lang,
+	            jsonData = jsonDatas[lang];;
 	        return React.createElement(
 	            AppCanvas,
 	            null,
@@ -24203,7 +24204,7 @@
 	                    React.createElement(
 	                        'a',
 	                        { style: styles.a, href: 'javascript:void(0);', onClick: this._handleContactClick },
-	                        '联系我们'
+	                        jsonData.footer.contactUs
 	                    ),
 	                    React.createElement('span', { style: styles.spanSplit }),
 	                    'teamai@foxmail.com'
@@ -33716,11 +33717,14 @@
 	        },
 	        navAbout: {
 	            title: '关于我们'
+	        },
+	        footer: {
+	            contactUs: '联系我们'
 	        }
 	    },
 	    en: {
 	        navLogo: {
-	            title: '成睿五金',
+	            title: 'ChengRui Hardware',
 	            img: '/public/img/logo.png'
 	        },
 	        navHome: {
@@ -33731,6 +33735,9 @@
 	        },
 	        navAbout: {
 	            title: 'About'
+	        },
+	        footer: {
+	            contactUs: 'contact us'
 	        }
 	    }
 	};
@@ -48881,7 +48888,7 @@
 	    },
 	    en: {
 	        logo: '/public/img/logo.png',
-	        title: '成睿五金',
+	        title: 'ChengRui Hardware',
 	        desc: '<div>“Pionnering&innovation ,harmony&win-win” is our concept!</div> “Quality first ,Credit foremost ” is our permanent pursuit!'
 	    }
 	};
@@ -48895,62 +48902,29 @@
 	var React = __webpack_require__(1);
 	var Body = __webpack_require__(389);
 	var BodyContainer = __webpack_require__(392);
-	var ProductItem = __webpack_require__(393);
-	var MaterialUi = __webpack_require__(299);
+	var ProductArea = __webpack_require__(393);
 
-	var Styles = MaterialUi.Styles;
-	var Colors = Styles.Colors;
-
-	var jsonTypes = __webpack_require__(394);
-	var jsonProducts = __webpack_require__(395);
+	var jsonTypes = __webpack_require__(395);
+	var jsonProducts = __webpack_require__(396);
+	var jsonDatas = __webpack_require__(397);
 
 	var Product = React.createClass({
 		displayName: 'Product',
 
 		render: function render() {
-			var style = {
-				type: {
-					fontSize: 26,
-					color: Colors.cyan500
-				},
-				item: {
-					display: 'inline-block',
-					marginRight: '10px',
-					marginLeft: '10px',
-					marginBottom: '20px'
-				},
-				divider: {
-					borderStyle: 'none',
-					height: '2px',
-					marginTop: '2px',
-					marginBottom: '10px',
-					backgroundColor: Colors.cyan100
-				}
-			},
-			    jsonType = jsonTypes[this.props.lang],
+			var jsonType = jsonTypes[this.props.lang],
 			    jsonProduct = jsonProducts[this.props.lang],
+			    jsonData = jsonDatas[this.props.lang],
 			    bcJsx;
 
 			bcJsx = jsonType.map(function (typeItem) {
 				var products = jsonProduct[typeItem.id],
 				    typeJsx,
-				    productJsx;
-				if (products && products.length) {
-					typeJsx = React.createElement(
-						'div',
-						null,
-						React.createElement(
-							'span',
-							{ style: style.type },
-							typeItem.title
-						),
-						React.createElement('hr', { style: style.divider })
-					);
-					productJsx = products.map(function (productItem) {
-						return React.createElement(ProductItem, { style: style.item, item: productItem });
-					});
-
-					return [typeJsx, productJsx];
+				    productJsx,
+				    moreJsx = null,
+				    len = products && products.length;
+				if (len) {
+					return [React.createElement(ProductArea, { products: products, typeItem: typeItem, jsonData: jsonData })];
 				}
 
 				return;
@@ -49003,6 +48977,107 @@
 
 /***/ },
 /* 393 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var ProductItem = __webpack_require__(394);
+	var MaterialUi = __webpack_require__(299);
+	var Styles = MaterialUi.Styles;
+	var Colors = Styles.Colors;
+
+	module.exports = React.createClass({
+		displayName: 'exports',
+
+		getInitialState: function getInitialState() {
+			return {
+				moreStatus: 1 //1:已收起 2:已展开
+			};
+		},
+		render: function render() {
+			var products = this.props.products,
+			    typeItem = this.props.typeItem,
+			    jsonData = this.props.jsonData,
+			    len = products.length,
+			    moreStatus = this.state.moreStatus,
+			    style = {
+				type: {
+					fontSize: 26,
+					color: Colors.cyan500
+				},
+				item: {
+					display: 'inline-block',
+					marginRight: '10px',
+					marginLeft: '10px',
+					marginBottom: '20px'
+				},
+				hideItem: {
+					display: 'none',
+					marginRight: '10px',
+					marginLeft: '10px',
+					marginBottom: '20px'
+				},
+				divider: {
+					borderStyle: 'none',
+					height: '2px',
+					marginTop: '2px',
+					marginBottom: '10px',
+					backgroundColor: Colors.cyan100
+				},
+				more: {
+					display: 'block',
+					marginBottom: '20px',
+					marginTop: '-20px',
+					height: '23px',
+					lineHeight: '23px',
+					background: Colors.cyan100,
+					color: Colors.white,
+					textAlign: 'center'
+				}
+			};
+			return React.createElement(
+				'div',
+				null,
+				React.createElement(
+					'div',
+					null,
+					React.createElement(
+						'span',
+						{ style: style.type },
+						typeItem.title
+					),
+					React.createElement('hr', { style: style.divider })
+				),
+				products.map(function (productItem, index) {
+					return index > 3 && moreStatus === 1 ? null : React.createElement(ProductItem, { style: style.item, item: productItem });
+					// return (<ProductItem style={index > 3 && moreStatus === 1 ? style.hideItem : style.item} item={productItem} />);
+				}),
+				len > 4 ? React.createElement(
+					'a',
+					{ href: 'javascript:void(0);', onClick: this.clickMore, style: style.more },
+					React.createElement(
+						'span',
+						{ style: { display: 'inline' } },
+						jsonData.more[moreStatus]
+					)
+				) : ''
+			);
+		},
+		clickMore: function clickMore() {
+			var status = this.state.moreStatus;
+			if (status === 1) {
+				this.setState({ moreStatus: 2 });
+			} else {
+				this.setState({ moreStatus: 1 });
+				var top = this.getDOMNode().offsetTop - 74;
+				window.scroll(0, top < 0 ? 0 : top);
+			}
+		}
+	});
+
+/***/ },
+/* 394 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49084,7 +49159,7 @@
 	module.exports = ProductItem;
 
 /***/ },
-/* 394 */
+/* 395 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -49143,7 +49218,7 @@
 	}; //['GC', 'GDH', 'GPH', 'PTC', 'PH', 'HB', 'FS', 'SH']
 
 /***/ },
-/* 395 */
+/* 396 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -49151,7 +49226,28 @@
 	var products = { "FS": [{ "pic": "/public/img/product/FS/CR-A03.jpg", "title": "", "id": "No:CR-A03", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A04.jpg", "title": "", "id": "No:CR-A04", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A05.jpg", "title": "", "id": "No:CR-A05", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A06.jpg", "title": "", "id": "No:CR-A06", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A07.jpg", "title": "", "id": "No:CR-A07", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A08.jpg", "title": "", "id": "No:CR-A08", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A09.jpg", "title": "", "id": "No:CR-A09", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A10.jpg", "title": "", "id": "No:CR-A10", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A01.jpg", "title": "", "id": "No:CR-A01", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/FS/CR-A02.jpg", "title": "", "id": "No:CR-A02", "size": "", "sPrice": "", "mPrice": "" }], "GC": [{ "pic": "/public/img/product/GC/CR-052.jpg", "title": "", "id": "No:CR-052", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-052B.jpg", "title": "", "id": "No:CR-052B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-053.jpg", "title": "", "id": "No:CR-053", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-053B.jpg", "title": "", "id": "No:CR-053B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-054.jpg", "title": "", "id": "No:CR-054", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-054B.jpg", "title": "", "id": "No:CR-054B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-055.jpg", "title": "", "id": "No:CR-055", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-055A1.jpg", "title": "", "id": "No:CR-055A1", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-055A2.jpg", "title": "", "id": "No:CR-055A2", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-055B.jpg", "title": "", "id": "No:CR-055B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-055B1.jpg", "title": "", "id": "No:CR-055B1", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-055B2.jpg", "title": "", "id": "No:CR-055B2", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-056.jpg", "title": "", "id": "No:CR-056", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-056A.jpg", "title": "", "id": "No:CR-056A", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-056B.jpg", "title": "", "id": "No:CR-056B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-056B1.jpg", "title": "", "id": "No:CR-056B1", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-057.jpg", "title": "", "id": "No:CR-057", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-057B.jpg", "title": "", "id": "No:CR-057B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-058.jpg", "title": "", "id": "No:CR-058", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-058B.jpg", "title": "", "id": "No:CR-058B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-059.jpg", "title": "", "id": "No:CR-059", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-059B.jpg", "title": "", "id": "No:CR-059B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-060.jpg", "title": "", "id": "No:CR-060", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-060B.jpg", "title": "", "id": "No:CR-060B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-061.jpg", "title": "", "id": "No:CR-061", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-061B.jpg", "title": "", "id": "No:CR-061B", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-062.jpg", "title": "", "id": "No:CR-062", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GC/CR-063.jpg", "title": "", "id": "No:CR-063", "size": "", "sPrice": "", "mPrice": "" }], "GDH": [{ "pic": "/public/img/product/GDH/CR-L102.jpg", "title": "", "id": "No:CR-L102", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L103.jpg", "title": "", "id": "No:CR-L103", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L104.jpg", "title": "", "id": "No:CR-L104", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L105.jpg", "title": "", "id": "No:CR-L105", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L106.jpg", "title": "", "id": "No:CR-L106", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L107.jpg", "title": "", "id": "No:CR-L107", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L108.jpg", "title": "", "id": "No:CR-L108", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L109.jpg", "title": "", "id": "No:CR-L109", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L110.jpg", "title": "", "id": "No:CR-L110", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L111.jpg", "title": "", "id": "No:CR-L111", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L112.jpg", "title": "", "id": "No:CR-L112", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L113.jpg", "title": "", "id": "No:CR-L113", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L114.jpg", "title": "", "id": "No:CR-L114", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L115.jpg", "title": "", "id": "No:CR-L115", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L116.jpg", "title": "", "id": "No:CR-L116", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L99.jpg", "title": "", "id": "No:CR-L99", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L100.jpg", "title": "", "id": "No:CR-L100", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GDH/CR-L101.jpg", "title": "", "id": "No:CR-L101", "size": "", "sPrice": "", "mPrice": "" }], "GPH": [{ "pic": "/public/img/product/GPH/CR-G12.jpg", "title": "", "id": "No:CR-G12", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G13.jpg", "title": "", "id": "No:CR-G13", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G14.jpg", "title": "", "id": "No:CR-G14", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G15.jpg", "title": "", "id": "No:CR-G15", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G16.jpg", "title": "", "id": "No:CR-G16", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G17.jpg", "title": "", "id": "No:CR-G17", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G18.jpg", "title": "", "id": "No:CR-G18", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G19.jpg", "title": "", "id": "No:CR-G19", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G20.jpg", "title": "", "id": "No:CR-G20", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G21.jpg", "title": "", "id": "No:CR-G21", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G22.jpg", "title": "", "id": "No:CR-G22", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G23.jpg", "title": "", "id": "No:CR-G23", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G24.jpg", "title": "", "id": "No:CR-G24", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G25.jpg", "title": "", "id": "No:CR-G25", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G26.jpg", "title": "", "id": "No:CR-G26", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G27.jpg", "title": "", "id": "No:CR-G27", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G28.jpg", "title": "", "id": "No:CR-G28", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G29.jpg", "title": "", "id": "No:CR-G29", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G30.jpg", "title": "", "id": "No:CR-G30", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G31.jpg", "title": "", "id": "No:CR-G31", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G32.jpg", "title": "", "id": "No:CR-G32", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G33.jpg", "title": "", "id": "No:CR-G33", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G34.jpg", "title": "", "id": "No:CR-G34", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G35.jpg", "title": "", "id": "No:CR-G35", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G36.jpg", "title": "", "id": "No:CR-G36", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G40.jpg", "title": "", "id": "No:CR-G40", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G41.jpg", "title": "", "id": "No:CR-G41", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G42.jpg", "title": "", "id": "No:CR-G42", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G43.jpg", "title": "", "id": "No:CR-G43", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G44.jpg", "title": "", "id": "No:CR-G44", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G45.jpg", "title": "", "id": "No:CR-G45", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G46.jpg", "title": "", "id": "No:CR-G46", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G47.jpg", "title": "", "id": "No:CR-G47", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G01.jpg", "title": "", "id": "No:CR-G01", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G02.jpg", "title": "", "id": "No:CR-G02", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G03.jpg", "title": "", "id": "No:CR-G03", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G04.jpg", "title": "", "id": "No:CR-G04", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G05.jpg", "title": "", "id": "No:CR-G05", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G06.jpg", "title": "", "id": "No:CR-G06", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G07.jpg", "title": "", "id": "No:CR-G07", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G08.jpg", "title": "", "id": "No:CR-G08", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G09.jpg", "title": "", "id": "No:CR-G09", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G10.jpg", "title": "", "id": "No:CR-G10", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/GPH/CR-G11.jpg", "title": "", "id": "No:CR-G11", "size": "", "sPrice": "", "mPrice": "" }], "HB": [{ "pic": "/public/img/product/HB/CR-312.jpg", "title": "", "id": "No:CR-312", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-313.jpg", "title": "", "id": "No:CR-313", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-314.jpg", "title": "", "id": "No:CR-314", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-315.jpg", "title": "", "id": "No:CR-315", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-316.jpg", "title": "", "id": "No:CR-316", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-317.jpg", "title": "", "id": "No:CR-317", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-318.jpg", "title": "", "id": "No:CR-318", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-319.jpg", "title": "", "id": "No:CR-319", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-320.jpg", "title": "", "id": "No:CR-320", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-321.jpg", "title": "", "id": "No:CR-321", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-322.jpg", "title": "", "id": "No:CR-322", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-323.jpg", "title": "", "id": "No:CR-323", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-324.jpg", "title": "", "id": "No:CR-324", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-325.jpg", "title": "", "id": "No:CR-325", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-326.jpg", "title": "", "id": "No:CR-326", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-327.jpg", "title": "", "id": "No:CR-327", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-328.jpg", "title": "", "id": "No:CR-328", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-329.jpg", "title": "", "id": "No:CR-329", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-330.jpg", "title": "", "id": "No:CR-330", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-331.jpg", "title": "", "id": "No:CR-331", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-332.jpg", "title": "", "id": "No:CR-332", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-301.jpg", "title": "", "id": "No:CR-301", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-302.jpg", "title": "", "id": "No:CR-302", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-303.jpg", "title": "", "id": "No:CR-303", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-304.jpg", "title": "", "id": "No:CR-304", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-305.jpg", "title": "", "id": "No:CR-305", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-306.jpg", "title": "", "id": "No:CR-306", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-307.jpg", "title": "", "id": "No:CR-307", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-308.jpg", "title": "", "id": "No:CR-308", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-309.jpg", "title": "", "id": "No:CR-309", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-310.jpg", "title": "", "id": "No:CR-310", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/HB/CR-311.jpg", "title": "", "id": "No:CR-311", "size": "", "sPrice": "", "mPrice": "" }], "PH": [{ "pic": "/public/img/product/PH/CR-L46.jpg", "title": "", "id": "No:CR-L46", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L47.jpg", "title": "", "id": "No:CR-L47", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L48.jpg", "title": "", "id": "No:CR-L48", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L49.jpg", "title": "", "id": "No:CR-L49", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L50.jpg", "title": "", "id": "No:CR-L50", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L51.jpg", "title": "", "id": "No:CR-L51", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L52.jpg", "title": "", "id": "No:CR-L52", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L53.jpg", "title": "", "id": "No:CR-L53", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L54.jpg", "title": "", "id": "No:CR-L54", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L55.jpg", "title": "", "id": "No:CR-L55", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L56.jpg", "title": "", "id": "No:CR-L56", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L57.jpg", "title": "", "id": "No:CR-L57", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L58.jpg", "title": "", "id": "No:CR-L58", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PH/CR-L45.jpg", "title": "", "id": "No:CR-L45", "size": "", "sPrice": "", "mPrice": "" }], "PTC": [{ "pic": "/public/img/product/PTC/CR-L11.jpg", "title": "", "id": "No:CR-L11", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L12.jpg", "title": "", "id": "No:CR-L12", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L13.jpg", "title": "", "id": "No:CR-L13", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L14.jpg", "title": "", "id": "No:CR-L14", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L15.jpg", "title": "", "id": "No:CR-L15", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L16.jpg", "title": "", "id": "No:CR-L16", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L17.jpg", "title": "", "id": "No:CR-L17", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L18.jpg", "title": "", "id": "No:CR-L18", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L19.jpg", "title": "", "id": "No:CR-L19", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L20.jpg", "title": "", "id": "No:CR-L20", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L21.jpg", "title": "", "id": "No:CR-L21", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L22.jpg", "title": "", "id": "No:CR-L22", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L23.jpg", "title": "", "id": "No:CR-L23", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L24.jpg", "title": "", "id": "No:CR-L24", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L25.jpg", "title": "", "id": "No:CR-L25", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L26.jpg", "title": "", "id": "No:CR-L26", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L27.jpg", "title": "", "id": "No:CR-L27", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L28.jpg", "title": "", "id": "No:CR-L28", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L29.jpg", "title": "", "id": "No:CR-L29", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L30.jpg", "title": "", "id": "No:CR-L30", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L31.jpg", "title": "", "id": "No:CR-L31", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L32.jpg", "title": "", "id": "No:CR-L32", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L33.jpg", "title": "", "id": "No:CR-L33", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L34.jpg", "title": "", "id": "No:CR-L34", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L35.jpg", "title": "", "id": "No:CR-L35", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L36.jpg", "title": "", "id": "No:CR-L36", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L37.jpg", "title": "", "id": "No:CR-L37", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L38.jpg", "title": "", "id": "No:CR-L38", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L39.jpg", "title": "", "id": "No:CR-L39", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L40.jpg", "title": "", "id": "No:CR-L40", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L41.jpg", "title": "", "id": "No:CR-L41", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L42.jpg", "title": "", "id": "No:CR-L42", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L43.jpg", "title": "", "id": "No:CR-L43", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L44.jpg", "title": "", "id": "No:CR-L44", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L01.jpg", "title": "", "id": "No:CR-L01", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L02.jpg", "title": "", "id": "No:CR-L02", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L03.jpg", "title": "", "id": "No:CR-L03", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L04.jpg", "title": "", "id": "No:CR-L04", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L05.jpg", "title": "", "id": "No:CR-L05", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L06.jpg", "title": "", "id": "No:CR-L06", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L07.jpg", "title": "", "id": "No:CR-L07", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L08.jpg", "title": "", "id": "No:CR-L08", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L09.jpg", "title": "", "id": "No:CR-L09", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/PTC/CR-L10.jpg", "title": "", "id": "No:CR-L10", "size": "", "sPrice": "", "mPrice": "" }], "SH": [{ "pic": "/public/img/product/SH/CR-Y012.jpg", "title": "", "id": "No:CR-Y012", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y013.jpg", "title": "", "id": "No:CR-Y013", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y014.jpg", "title": "", "id": "No:CR-Y014", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y015.jpg", "title": "", "id": "No:CR-Y015", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y016.jpg", "title": "", "id": "No:CR-Y016", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y017.jpg", "title": "", "id": "No:CR-Y017", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y018.jpg", "title": "", "id": "No:CR-Y018", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y019.jpg", "title": "", "id": "No:CR-Y019", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y01.jpg", "title": "", "id": "No:CR-Y01", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y02.jpg", "title": "", "id": "No:CR-Y02", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y03.jpg", "title": "", "id": "No:CR-Y03", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y04.jpg", "title": "", "id": "No:CR-Y04", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y05.jpg", "title": "", "id": "No:CR-Y05", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y06.jpg", "title": "", "id": "No:CR-Y06", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y07.jpg", "title": "", "id": "No:CR-Y07", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y08.jpg", "title": "", "id": "No:CR-Y08", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y09.jpg", "title": "", "id": "No:CR-Y09", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y010.jpg", "title": "", "id": "No:CR-Y010", "size": "", "sPrice": "", "mPrice": "" }, { "pic": "/public/img/product/SH/CR-Y011.jpg", "title": "", "id": "No:CR-Y011", "size": "", "sPrice": "", "mPrice": "" }] };module.exports = { zh_cn: products, en: products };
 
 /***/ },
-/* 396 */
+/* 397 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = {
+	    zh_cn: {
+	        more: {
+	            1: '展开更多',
+	            2: '收起'
+	        }
+	    },
+	    en: {
+	        more: {
+	            1: 'unfold',
+	            2: 'fold'
+	        }
+	    }
+	};
+
+/***/ },
+/* 398 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49159,9 +49255,9 @@
 	var React = __webpack_require__(1);
 	var Body = __webpack_require__(389);
 	var BodyContainer = __webpack_require__(392);
-	var AboutContent = __webpack_require__(397);
+	var AboutContent = __webpack_require__(399);
 
-	var jsonDatas = __webpack_require__(403);
+	var jsonDatas = __webpack_require__(405);
 
 	var About = React.createClass({
 		displayName: 'About',
@@ -49183,7 +49279,7 @@
 	module.exports = About;
 
 /***/ },
-/* 397 */
+/* 399 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49195,11 +49291,11 @@
 	var CardText = __webpack_require__(317);
 	var Colors = __webpack_require__(230);
 	var Paper = __webpack_require__(254);
-	var IconTextField = __webpack_require__(398);
-	var AHome = __webpack_require__(399);
-	var ASPhone = __webpack_require__(400);
-	var APIdentity = __webpack_require__(401);
-	var ASNotes = __webpack_require__(402);
+	var IconTextField = __webpack_require__(400);
+	var AHome = __webpack_require__(401);
+	var ASPhone = __webpack_require__(402);
+	var APIdentity = __webpack_require__(403);
+	var ASNotes = __webpack_require__(404);
 
 	var AboutContent = React.createClass({
 		displayName: 'AboutContent',
@@ -49276,7 +49372,7 @@
 	module.exports = AboutContent;
 
 /***/ },
-/* 398 */
+/* 400 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49336,7 +49432,7 @@
 	module.exports = IconTextField;
 
 /***/ },
-/* 399 */
+/* 401 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49363,7 +49459,7 @@
 	module.exports = ActionHome;
 
 /***/ },
-/* 400 */
+/* 402 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49390,7 +49486,7 @@
 	module.exports = ActionSettingsPhone;
 
 /***/ },
-/* 401 */
+/* 403 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49417,7 +49513,7 @@
 	module.exports = ActionPermIdentity;
 
 /***/ },
-/* 402 */
+/* 404 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -49444,7 +49540,7 @@
 	module.exports = ActionSpeakerNotes;
 
 /***/ },
-/* 403 */
+/* 405 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -49479,18 +49575,18 @@
 	};
 
 /***/ },
-/* 404 */
+/* 406 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function injectTapEventPlugin () {
 	  __webpack_require__(31).injection.injectEventPluginsByName({
-	    "TapEventPlugin":       __webpack_require__(405)
+	    "TapEventPlugin":       __webpack_require__(407)
 	  });
 	};
 
 
 /***/ },
-/* 405 */
+/* 407 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -49518,10 +49614,10 @@
 	var EventPluginUtils = __webpack_require__(33);
 	var EventPropagators = __webpack_require__(73);
 	var SyntheticUIEvent = __webpack_require__(87);
-	var TouchEventUtils = __webpack_require__(406);
+	var TouchEventUtils = __webpack_require__(408);
 	var ViewportMetrics = __webpack_require__(38);
 
-	var keyOf = __webpack_require__(407);
+	var keyOf = __webpack_require__(409);
 	var topLevelTypes = EventConstants.topLevelTypes;
 
 	var isStartish = EventPluginUtils.isStartish;
@@ -49665,7 +49761,7 @@
 
 
 /***/ },
-/* 406 */
+/* 408 */
 /***/ function(module, exports) {
 
 	/**
@@ -49713,7 +49809,7 @@
 
 
 /***/ },
-/* 407 */
+/* 409 */
 /***/ function(module, exports) {
 
 	/**

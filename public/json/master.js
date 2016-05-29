@@ -12,11 +12,14 @@ module.exports = {
         },
         navAbout: {
             title: '关于我们'
+        },
+        footer: {
+            contactUs: '联系我们'
         }
     },
     en: {
         navLogo: {
-            title: '成睿五金',
+            title: 'ChengRui Hardware',
             img: '/public/img/logo.png'
         },
         navHome: {
@@ -27,6 +30,9 @@ module.exports = {
         },
         navAbout: {
             title: 'About'
+        },
+        footer: {
+            contactUs: 'contact us'
         }
     }
 }

@@ -4,7 +4,7 @@
   "description": "用react实现的简单产品列表展示",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node node-app.js"
   },
   "repository": {
     "type": "git",
@@ -34,5 +34,8 @@
     "recursive-readdir-sync": "^1.0.6",
     "webpack": "^1.12.9",
     "webpack-stream": "^2.3.0"
+  },
+  "devDependencies": {
+    "gulp-imagemin": "^3.0.1"
   }
 }

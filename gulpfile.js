@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var webpack = require('webpack-stream');
 var path = require('path');
+var imagemin = require('gulp-imagemin');
 var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
 gulp.task('default', function() {
@@ -10,8 +11,8 @@ gulp.task('default', function() {
             module: {
                 loaders: [{
                     test: /\.js$/,
-                    loader: 'babel', 
-                    exclude: [nodeModulesPath]  //exclude node_modules so that they are not all compiled
+                    loader: 'babel',
+                    exclude: [nodeModulesPath] //exclude node_modules so that they are not all compiled
                 }]
             },
             output: {
@@ -26,3 +27,8 @@ gulp.task('default', function() {
 });
 
 gulp.task('img', require('./imgjson-generator.js'))
+gulp.task('imgmin', function() {
+    gulp.src(__dirname + '/public/img-ori/**/*')
+        .pipe(imagemin())
+        .pipe(gulp.dest(__dirname + '/public/img/'))
+})

@@ -6,7 +6,7 @@ module.exports = {
     },
     en: {
         logo: '/public/img/logo.png',
-        title: '成睿五金',
+        title: 'ChengRui Hardware',
         desc: '<div>“Pionnering&innovation ,harmony&win-win” is our concept!</div> “Quality first ,Credit foremost ” is our permanent pursuit!'
     }
 }
