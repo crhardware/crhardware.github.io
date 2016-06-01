@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var webpack = require('webpack-stream');
 var path = require('path');
+var uglify = require('gulp-uglify');
 var imagemin = require('gulp-imagemin');
 var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
@@ -23,6 +24,7 @@ gulp.task('default', function() {
             //     react: 'React'
             // }
         }))
+        .pipe(uglify())
         .pipe(gulp.dest(__dirname + '/public/scripts/'));
 });
 
